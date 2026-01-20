@@ -6,6 +6,7 @@ LOG_FILE="$LOG_DIR/validate_service.log"
 HEALTH_URL="http://localhost:8000/health"
 MAX_ATTEMPTS=30
 SLEEP_SECONDS=2
+SERVICE_NAME="gunicorn.service"
 
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
@@ -34,4 +35,7 @@ while [[ $attempt -le $MAX_ATTEMPTS ]]; do
 done
 
 log "ERROR: Health check failed after $MAX_ATTEMPTS attempts"
+log "Dumping systemd status for $SERVICE_NAME (if available)"
+systemctl status "$SERVICE_NAME" --no-pager || true
+journalctl -u "$SERVICE_NAME" --no-pager -n 200 || true
 exit 1
