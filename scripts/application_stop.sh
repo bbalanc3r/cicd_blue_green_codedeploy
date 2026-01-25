@@ -12,15 +12,6 @@ log() { echo "[$(date -Is)] $*"; }
 
 log "Starting application_stop"
 
-if systemctl list-unit-files | awk '{print $1}' | grep -qx "$SERVICE_NAME"; then
-  if systemctl is-active --quiet "$SERVICE_NAME"; then
-    log "Stopping $SERVICE_NAME"
-    systemctl stop "$SERVICE_NAME"
-  else
-    log "$SERVICE_NAME not active; nothing to stop"
-  fi
-else
-  log "$SERVICE_NAME not installed; nothing to stop"
-fi
+systemctl stop "$SERVICE_NAME" 2>/dev/null || true
 
 log "application_stop completed"

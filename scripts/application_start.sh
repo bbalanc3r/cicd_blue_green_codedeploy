@@ -12,17 +12,8 @@ log() { echo "[$(date -Is)] $*"; }
 
 log "Starting application_start"
 
-log "Reloading systemd units"
 systemctl daemon-reload
-
-log "Enabling $SERVICE_NAME"
-systemctl enable "$SERVICE_NAME" >/dev/null 2>&1 || systemctl enable "$SERVICE_NAME"
-
-log "Starting/restarting $SERVICE_NAME"
-if systemctl is-active --quiet "$SERVICE_NAME"; then
-  systemctl restart "$SERVICE_NAME"
-else
-  systemctl start "$SERVICE_NAME"
-fi
+systemctl enable "$SERVICE_NAME"
+systemctl restart "$SERVICE_NAME"
 
 log "application_start completed"

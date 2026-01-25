@@ -6,36 +6,23 @@ LOG_FILE="$LOG_DIR/validate_service.log"
 HEALTH_URL="http://localhost:8000/health"
 MAX_ATTEMPTS=30
 SLEEP_SECONDS=2
-SERVICE_NAME="gunicorn.service"
 
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 log() { echo "[$(date -Is)] $*"; }
 
-log "Starting validate_service"
+log "Starting health check"
 
-if ! command -v curl >/dev/null 2>&1; then
-  log "curl not found; installing"
-  yum -y install curl
-fi
-
-attempt=1
-while [[ $attempt -le $MAX_ATTEMPTS ]]; do
-  code="$(curl -sS -o /dev/null -w "%{http_code}" "$HEALTH_URL" || true)"
+for attempt in $(seq 1 $MAX_ATTEMPTS); do
+  code=$(curl -sS -o /dev/null -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo "000")
   if [[ "$code" == "200" ]]; then
     log "Health check OK (HTTP $code)"
-    log "validate_service completed"
     exit 0
   fi
-
-  log "Health check attempt $attempt/$MAX_ATTEMPTS failed (HTTP $code); retrying in ${SLEEP_SECONDS}s"
+  log "Attempt $attempt/$MAX_ATTEMPTS failed (HTTP $code); retrying in ${SLEEP_SECONDS}s"
   sleep "$SLEEP_SECONDS"
-  attempt=$((attempt + 1))
 done
 
 log "ERROR: Health check failed after $MAX_ATTEMPTS attempts"
-log "Dumping systemd status for $SERVICE_NAME (if available)"
-systemctl status "$SERVICE_NAME" --no-pager || true
-journalctl -u "$SERVICE_NAME" --no-pager -n 200 || true
 exit 1
