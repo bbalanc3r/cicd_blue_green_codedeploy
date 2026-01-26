@@ -8,9 +8,9 @@ def index():
     return 'test1235'
 
 
-# @app.route('/health')
-# def health():
-#     return 'ok', 200
+@app.route('/health')
+def health():
+    return 'ok', 200
 
 
 if __name__ == '__main__':
