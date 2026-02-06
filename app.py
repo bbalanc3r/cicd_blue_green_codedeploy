@@ -10,7 +10,7 @@ def index():
 
 @app.route('/health')
 def health():
-    return 'ok', 200
+    return 'not ok', 500
 
 
 if __name__ == '__main__':
