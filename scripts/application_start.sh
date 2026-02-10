@@ -4,11 +4,6 @@ set -euo pipefail
 APP_DIR="/var/www/app"
 VENV_DIR="$APP_DIR/venv"
 
-# Create venv and install dependencies
-python3 -m venv "$VENV_DIR"
-"$VENV_DIR/bin/pip" install --upgrade pip --quiet
-"$VENV_DIR/bin/pip" install -r "$APP_DIR/requirements.txt" --quiet
-
 # Create systemd service file
 cat > /etc/systemd/system/flask-app.service << EOF
 [Unit]
