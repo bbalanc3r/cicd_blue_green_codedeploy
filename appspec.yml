@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: /
-    destination: /var/www/app
+    destination: /opt/codedeploy
 
 permissions:
   - object: /var/www/app
@@ -19,6 +19,11 @@ permissions:
     mode: 755
     type:
       - file
+
+  - object: /opt/codedeploy
+    owner: root
+    group: root
+    mode: 755
 
 hooks:
   ApplicationStop:

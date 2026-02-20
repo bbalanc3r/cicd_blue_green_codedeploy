@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="/var/www/app"
+APP_DIR="/opt/codedeploy"
 VENV_DIR="$APP_DIR/venv"
 
 python3 -m venv "$VENV_DIR"
