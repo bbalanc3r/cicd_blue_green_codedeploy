@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="/opt/codedeploy"
+APP_DIR="/var/www/app"
 VENV_DIR="$APP_DIR/venv"
 
 # Create systemd service file

@@ -1,36 +1,11 @@
 version: 0.2
 
 phases:
-  pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-8)
-      - IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - echo Building Docker image...
   build:
     commands:
-      - docker build -t $IMAGE_URI -f Dockerfile .
-      - docker tag $IMAGE_URI $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
-  post_build:
-    commands:
-      - echo Pushing to ECR...
-      - docker push $IMAGE_URI
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
-      - echo Creating deployment artifact...
-      - mkdir -p deploy/scripts
-      - echo $IMAGE_URI > deploy/image_uri.txt
-      - cp appspec.yml deploy/
-      - cp scripts/*.sh deploy/scripts/ 2>/dev/null || true
-
+      - echo "Install python dependencies"
+      - python -m pip install --upgrade pip
+      - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 artifacts:
   files:
-    - image_uri.txt
-    - appspec.yml
-    - scripts/*
-  base-directory: deploy
-  name: deploy-artifact
-
-env:
-  variables:
-    IMAGE_REPO_NAME: cmtr-ac8bmr88-north-pole
+    - '**/*'
